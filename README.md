@@ -1,1 +1,2 @@
-# MillionMonkies
+# Markov chain text generator
+
