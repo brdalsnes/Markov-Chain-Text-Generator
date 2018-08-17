@@ -1,0 +1,3 @@
+# Markov Chain Text Generator
+
+This program mimics its input text using a [Markov Chain](https://en.wikipedia.org/wiki/Markov_chain). Each node in the chain represents a word. From the input text the distribution of following words is determined. The ouput will resemble the input text, but will most likely be nonsensical. It can lead to some fun results. Here is an example of the output produced using ... as input.

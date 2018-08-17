@@ -1,0 +1,113 @@
+
+Ever since the industrial revolution humans workers performing simple tasks have
+been replaced by automated machines. In more recent years there has been much
+research dedicated to the automation of more complex tasks, such as driving. The
+motivation behind this research is twofold. First, there is the potential for increased
+safety. For example, many thousand die in traffic every year. This number could be
+drastically reduced with the introduction of reliable autonomous cars. Second, there
+is the economic benefits. Automation has greatly reduced the cost in manufacturing,
+allowing consumer to purchase cheaper products. In addition, people are freed up to
+spend their time on more useful or rewarding tasks.
+There is reason to believe that similar advancements can be made in the maritime
+industry if autonomous surface vehicles (ASVs) begin to replace regular, manned vessels.
+It is expected that ASVs will be safer and cheaper to run [3, 4]. It is estimated
+that 75% - 96% of all marine accidents are due to human error [4]. It is therefore reasonable
+to assume that autonomous vessels can greatly reduce the number accidents
+and lives lost. Another problem facing the maritime industry is that there is shortage
+of skilled people willing to work on a ship for weeks or months at a time. There is
+also the problem of piracy which is not a serious threat for an ASV as the ship cannot
+be controlled from the ship itself and there are no potential hostages on board.
+However, making an ASV safely operate together with other marine traffic is a major
+challenge. The vessel needs to comply with the international regulations for preventing
+collisions at sea (COLREGS), which serves as the "rules of the road" at sea. It
+is therefore necessary that ASVs are equipped with a collision avoidance (COLAV)
+system that not only avoids collisions with other ships, but also complies with the
+COLREGS. When performing COLAV with respect to other vessels, one must model
+how the vessels will maneuver in the future. The focus of this thesis is to investigate
+such prediction techniques and improve upon them, and to test whether these
+predictions are suitable for use within a COLAV system.
+Most of the previous literature regarding collision avoidance for ASVs assumes that
+obstacles behave according to the constant velocity model (CVM), that is that they
+maintain a constant or near constant velocity [5, 2, 6]. However, such predictions
+might be sub-optimal for prediction horizons of 5 - 15 minutes, which is time horizon
+2 Chapter 1. Introduction
+of interest for COLAV.
+Other prediction methods for maritime vessels from the literature are usually developed
+for longer-term predictions than are of interest in the context of COLAV,
+and instead focus on ship traffic monitoring and anomaly detection[7, 8, 9]. In [7],
+vessel trajectories are predicted by describing a vessel’s velocity using a Ornstein-
+Uhlenbeck (OU) stochastic process. This was shown to greatly reduce the variance of
+the predicted position. Another approach for vessel movement prediction is to cluster
+trajectories based on historical automatic identification system (AIS) data and then
+assign an object’s initial state to one of these clusters [9, 10, 11].
+A more data-driven approach was first introduced in [12] with the single point neighbor
+search (SPNS). The SPNS algorithm uses historical AIS messages within an euclidean
+radius to obtain a predicted course and speed of the vessel. Historical messages with
+courses that deviate by a certain amount from the vessel’s course are discarded in order
+to avoid influence from opposite moving vessels in the predictions. What remains
+are messages that have a similar position and course as that of the vessel. The median
+course and speed of these close neighbors are calculated and used as a predicted course
+and speed of the vessel. The predicted course and speed are then used to calculate the
+future position by a given step length parameter. The same process is then applied
+on the newly predicted state and this is then repeated until a trajectory of desired
+length is produced.
+In order to handle branching of sea lanes and to estimate prediction uncertainty, the
+neighbor course distribution method (NCDM) was developed [1]. Whereas the output
+from the SPNS can be seen as a list of states which forms a single trajectory, the output
+from NCDM is a tree of states which forms several trajectories. Each individual
+trajectory is calculated in a similar manner as in the SPNS. The same set of close
+neighbors are used to predict the vessel’s course and speed at each predicted position.
+However, while the SPNS predicts the course and speed as the median course and
+speed of the closest neighbors, the NCDM samples courses randomly from the closest
+neighbor set. The NCDM is thus able to predict trajectories in several branched sea
+lanes and it possess the ability to indicate an uncertainty measure of the predictions.
+In the specialization project [13] the NCDM was further developed. The predicted
+position of the vessel was here represented as a Gaussian mixture model (GMM). A
+new data structure which utilizes the recent trajectory of the vessel was also introduced.
+This data structure significantly improved the consistency of the prediction,
+although there was no improvement in accuracy.
+1.2.2 Collision avoidance
+In the COLAV literature for ASVs a distinction between global and local COLAV
+methods is often made. A global method plans a desired path for the vessel based on
+the initial state, the goal state and the known obstacles at the initial time. The major
+drawback of global methods is the large computational cost which means a real-time
+implementation might not be feasible. Local methods, on the other hand, use far less
+computational power, and are therefore more dynamic and can be updated with new
+input more frequently. These methods have no overview of the global environment,
+but rely on sensory input from the local surroundings.
+1.3. Contributions 3
+One common global method is the rapidly-exploring random trees (RRT) algorithm
+first introduced in [14]. This randomized algorithm grows a tree that explores the
+available state space. In the end, a sup-optimal, but sufficient path that avoids the
+specified obstacles is found from start to goal. A COLREGS compliant planner based
+on RRTs was developed in [15].
+Local methods typically used for COLAV include the velocity obstacle (VO) method
+and the dynamic window (DW) algorithm. In [5] the VO method is used. The VO is
+the set of all velocities that the ASV can take that will eventually result in a collision,
+assuming that the obstacle velocity is constant. The method used considers four different
+scenarios where different COLREGS rules apply. A velocity outside the VO is
+selected based on which scenario the ASV is facing.
+The DW algorithm, unlike the VO method, takes the limitations of the vehicle into
+account. A window containing the reachable combinations of forward and rotational
+speed is defined based on the state and dynamic constraints of the vehicle. The search
+space is thus reduced to velocities within this window. In addition, velocities that will
+lead to collisions with the obstacles are also restricted. The DW algorithm was developed
+in [16] for implementation with mobile robots. In [17] the DW algorithm
+was implemented for COLAV for autonomous underwater vehicles (AUVs). This algorithm
+was further developed for use with ASVs and tested in full-scale experiments
+with a radar-based tracking system in [18].
+In [19] a hybrid method is implemented where one global and one local method are
+combined. A RRT is used to construct a path from start to goal, while the DW
+approach is used to make local adaptions when the sensors detect that the planed
+path runs into obstacles. This was demonstrated to give superior results compared to
+relying on either a global or local approach alone.
+In [2] a COLAV method based on model predictive control (MPC) is developed. This
+algorithm is intended to be used in a mid-layer between a top, global layer and a
+bottom, local layer. The planned path from the global layer is used as input for
+the mid-level algorithm which outputs a new modified path for the local layer. The
+algorithm uses the predicted output from an MPC as a planed path. This process is
+described in further detail in Section 6.2. MPC is also used for COLAV in [6] with
+a compliance to more COLREGS rules than in [2], but the control behaviours of the
+ASV are limited to a finite set of discrete maneuvers as the method rely on brute force
+techniques. The MPC algorithm in [6] is tested in full-scale experiments using AIS
+for obtaining obstacle information in [20].
